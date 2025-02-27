@@ -16,35 +16,43 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
 
   // Increase the count after successful form submission
   // to reset touched status of all the `Field`s
+
+  const urlPattern = new RegExp(
+    '^((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=+$,\\w]+@)?[A-Za-z0-9.-]+|' +
+      '(?:www\\.|[-;:&=+$,\\w]+@)[A-Za-z0-9.-]+)' +
+      '((?:\\/[+~%/.\\w-_]*)?\\??(?:[-+=&;%@,.\\w_]*)#?(?:[,.!/\\\\\\w]*))?)$',
+  );
+
+  const validateUrl = (url: string) => {
+    return urlPattern.test(url) ? null : 'Invalid URL';
+  };
+
   const isFormValid =
-    title.trim() &&
-    imgUrl.trim() &&
-    imdbUrl.trim() &&
-    imdbId.trim();
+    title.trim() && imgUrl.trim() && imdbUrl.trim() && imdbId.trim();
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-      event.preventDefault();
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-      if (!isFormValid) {
-        return;
-      }
+    if (!isFormValid) {
+      return;
+    }
 
-      const newMovie: Movie = {
-        title: title.trim(),
-        description: description.trim(),
-        imgUrl: imgUrl.trim(),
-        imdbUrl: imdbUrl.trim(),
-        imdbId: imdbId.trim(),
-      };
-
-      onAdd(newMovie);
-      setTitle('');
-      setDescription('');
-      setImgUrl('');
-      setImdbUrl('');
-      setImdbId('');
-      setCount(prev => prev + 1);
+    const newMovie: Movie = {
+      title: title.trim(),
+      description: description.trim(),
+      imgUrl: imgUrl.trim(),
+      imdbUrl: imdbUrl.trim(),
+      imdbId: imdbId.trim(),
     };
+
+    onAdd(newMovie);
+    setTitle('');
+    setDescription('');
+    setImgUrl('');
+    setImdbUrl('');
+    setImdbId('');
+    setCount(prev => prev + 1);
+  }
 
   return (
     <form className="NewMovie" key={count} onSubmit={handleSubmit}>
@@ -71,7 +79,8 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
         value={imgUrl}
         onChange={setImgUrl}
         required
-        />
+        validation={validateUrl}
+      />
 
       <TextField
         name="imdbUrl"
@@ -79,7 +88,8 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
         value={imdbUrl}
         onChange={setImdbUrl}
         required
-        />
+        validation={validateUrl}
+      />
 
       <TextField
         name="imdbId"
@@ -87,7 +97,7 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
         value={imdbId}
         onChange={setImdbId}
         required
-        />
+      />
 
       <div className="field is-grouped">
         <div className="control">
@@ -95,6 +105,7 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
             type="submit"
             data-cy="submit-button"
             className="button is-link"
+            disabled={!isFormValid}
           >
             Add
           </button>
